@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Paint</title>
+    <style type="text/css"><!--
+      #container { position: relative; }
+      #imageView { border: 1px solid #000; }
+      --></style>
+
+    <script type="text/javascript">
+    window.onload = setupRefresh;
+
+    function setupRefresh() {
+        setTimeout("refreshPage();", 500); // milliseconds
+        var canvas = document.getElementById("canvas");
+        var context = canvas.getContext("2d");
+        var width = canvas.width;
+        var height = canvas.height;
+        var cpuusage= document.getElementById("cpu").value;
+        var users = document.getElementById("users").value;
+        var x = ((cpuusage/100)-.5)*50;
+        var y = Math.cos(cpuusage/100)*-50;
+
+        context.font = "12pt Arial";
+        context.strokeText("CPU usage:",20,20);
+        context.strokeText("0",110,150);
+        context.strokeText("50",190,75);
+        context.strokeText("100",270,150);
+
+        var color = document.getElementById("color");
+
+        context.fillStyle="rgb(200,200,200)";
+        context.beginPath();
+        context.arc(width/2,height/2,70,0,Math.PI,true);
+        context.closePath();
+        context.fill();
+
+        context.beginPath();
+        context.moveTo(width/2,height/2);
+        context.lineTo(width/2+x,height/2+y);
+        context.stroke();
+
+    }
+    function refreshPage() {
+       window.location = location.href;
+    }
+  </script> 
+
+  </head>
+  <body>
+
+    <div id="container">
+      <canvas id="canvas" width="400" height="300"></canvas>
+    </div>
+    <p>
+        <label> cpu: <label>
+        cpuusagegoeshere
+    </p>
+
+
+  </body>
+</html>

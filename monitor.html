@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Monitor</title>
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+
+    <script type="text/javascript">
+(function($){ // encapsulate jQuery
+var chart;
+$(document).ready(function() {
+    chart = new Highcharts.Chart({
+        chart: {
+            renderTo: 'container',
+            type: 'line',
+            marginRight: 130,
+            marginBottom: 25
+        },
+        title: {
+            text: 'CPU Usage Data',
+            x: -20 //center
+        },
+        xAxis: {
+            tickInterval: 10,
+            labels:{align:'center',rotation:720,y:10,x:0},
+            //"type": "datetime"
+            //categories: [1,2]
+        },
+            yAxis: {
+            min:0,
+            title: {
+                text: 'CPU %'
+            },
+            plotLines: [{
+                value: 0,
+                width: 1,
+                color: '#808080'
+            }]
+        },
+        tooltip: {
+            formatter: function() {
+                    return '<b>'+ this.series.name +'</b><br/>time:'+this.x +'<br>cpu: '+ this.y;
+            }
+        },
+        legend: {
+            layout: 'vertical',
+            align: 'right',
+            verticalAlign: 'top',
+            x: -10,
+            y: 100,
+            borderWidth: 0
+        },
+        series: [
+            //name: 'London',
+            //data: [6.6, 4.8]
+        ]
+    });
+});
+
+
+})(jQuery);
+
+</script>
+
+
+
+
+
+    <script type="text/javascript">
+    //window.onload = graphData;
+    }
+    function graphData() {
+       window.location = location.href;
+    }
+  </script> 
+
+
+    <script src="http://code.highcharts.com/highcharts.js"></script>
+    <script src="http://code.highcharts.com/modules/exporting.js"></script>
+</head>
+    <body>
+        <div id="container" style="width: 600px; height: 400px; "></div><br><br>
+        <b>url parameters (/monitor/?s=1&e=48&f=60):<br></b>
+        e - end: how many hours ago from now to stop collecting data<br>
+        s - start: how many hours prior to [e] to start collecting data<br>
+        f - frequency: the datacollection interval in seconds<br>
+        <br><br>
+        data collected using AWS CloudWatch
+
+
+
+
+  </body>
+</html>

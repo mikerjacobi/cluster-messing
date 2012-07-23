@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Paint</title>
+    <style type="text/css"><!--
+      #container { position: relative; }
+      #imageView { border: 1px solid #000; }
+      --></style>
+
+    <script type="text/javascript">
+    window.onload = setupRefresh;
+
+    function setupRefresh() {
+        setTimeout("refreshPage();", 500); // milliseconds
+        var canvas = document.getElementById("canvas");
+        var context = canvas.getContext("2d");
+        var time=document.getElementById("time").value;
+        var seconds = Math.floor((time/1000)%60);
+        var width = canvas.width;
+        var height = canvas.height;
+
+        //background
+        context.fillStyle='#8b8';
+        context.beginPath();
+        context.arc(width/2,height/2,110,0,Math.PI*2,true);
+        context.closePath();
+        context.fill();
+        context.font = "12pt Arial";
+        context.strokeText("12",width/2-3,height/2-90);
+        context.strokeText("3",width/2+90,height/2);
+        context.strokeText("6",width/2-3,height/2+90);
+        context.strokeText("9",width/2-90,height/2);
+
+        //seconds
+        var x = (Math.cos(((seconds-15)/60)*2*Math.PI))*80;
+        var y = (Math.sin(((seconds-15)/60)*2*Math.PI))*80;
+        context.beginPath();
+        context.moveTo(width/2,height/2);
+        context.lineTo(width/2+x,height/2+y);
+        context.stroke();
+
+        //minutes
+        var minutes = Math.floor(time/1000/60%60);
+        context.beginPath();
+        x = (Math.cos(((minutes-15)/60)*2*Math.PI))*50;
+        y = (Math.sin(((minutes-15)/60)*2*Math.PI))*50;
+        context.moveTo(width/2,height/2);
+        context.lineTo(width/2+x,height/2+y);
+        context.stroke();
+
+        //hours
+        var hours = Math.floor(time/1000/60/24%12);    
+        context.beginPath();
+        x = (Math.cos(((hours-6)/24)*2*Math.PI))*40;
+        y = (Math.sin(((hours-6)/60)*2*Math.PI))*40;
+        context.moveTo(width/2,height/2);
+        context.lineTo(width/2+x,height/2+y);
+        context.stroke();
+
+        document.getElementById("seconds").value=seconds;
+        document.getElementById("minutes").value=minutes;
+        document.getElementById("hours").value=hours;
+    }
+    function refreshPage() {
+       window.location = location.href;
+    }
+  </script> 
+
+  </head>
+  <body>
+
+    <div id="container">
+      <canvas id="canvas" width="400" height="300"></canvas>
+    </div>
+    <p>
+        <label> time in milliseconds: </label>
+        timeinputgoeshere
+        <br>
+        <label> seconds: </label> 
+        <input id="seconds"  value="0" readonly="readonly" /><br>
+        <label> minutes: </label>
+        <input id="minutes" type="text" value="0" readonly="readonly" /> <br>
+        <label> hours: <label>
+                <input id="hours" type="text" value="0" readonly="readonly" /><br>
+    </p>
+
+
+  </body>
+</html>

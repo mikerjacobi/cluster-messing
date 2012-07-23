@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Paint</title>
+    <style type="text/css"><!--
+      #container { position: relative; }
+      #imageView { border: 1px solid #000; }
+      --></style>
+    <script type="text/javascript" src="/paintjs"> </script>
+  </head>
+  <body onload="draw_background();">
+
+    <div id="container">
+      <canvas id="imageView" width="400" height="300"></canvas>
+    </div>
+    
+
+    <!--
+    <div>
+    <label>  
+        <select id="options" style="">
+            <option value=""></option>
+            <option value="save" >save</option>
+        </select>
+    </label> -->
+
+            <form id='imgForm' action="index" method="post" enctype="multipart/form-data"  >
+                username: <input name="uname" type="text" /> </br>
+                filename: <input name="fname" type="text" /> <br>
+                password: <input name="pword" type="text" /> <br>
+                <button id="saveButton" type="button"> Save! </button>
+                <input id='data' type="hidden" name="data" value="a" /> <br />
+                <input id="actionInput" name="actionInput" type='hidden' value="b"/> </br>
+                <input type="submit" style="visibility:hidden"/>
+            </form>
+        <!--<td>
+            <form id="dlForm" action="download" method="post" enctype="multipart/form-data" >
+                username: <input name="dlUsername" type="text" /> <br>
+                filename: <input name="dlFilename" type="text" /> <br>
+                password: <input name="dlPassword" type="text" /> <br>
+                <input type="submit" value="Load!"/>
+            </form>
+        </td> -->
+</div> <br><br> 
+  </body>
+</html>
