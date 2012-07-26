@@ -7,10 +7,13 @@ import boto
 import datetime
 import unicodedata
 from pymongo import *
+import S3
 
 os.system('mongod --dbpath ./mongodatadir &')
 time.sleep(3)
 c=Connection()
+AWS_ACCESS_KEY_ID=open('akid','r').read().split('\n')[0]
+AWS_SECRET_ACCESS_KEY=open('sak','r').read().split('\n')[0]
 
 class HelloWorld(object):
     def index(self):
@@ -36,26 +39,48 @@ class Paintjs(object):
 
 class Paint(object):
     global c
+    global AWS_ACCESS_KEY_ID
+    global AWS_SECRET_ACCESS_KEY
+
+    def u2s(self,u):
+	#unicode to string
+	s=""
+	for c in u:
+		if ord(c)<128:
+			s+=c
+	return s
 
     def index(self, fname='', uname='', pword='', actionInput='', data=None):
-        action=actionInput
-        fname = fname.encode('ascii', 'ignore')
-        uname = uname.encode('ascii', 'ignore')
-        pword = pword.encode('ascii', 'ignore')
+	BUCKET_NAME="jacobi-bucket-1"
+	conn = S3.AWSAuthConnection(AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY)
+	generator = S3.QueryStringAuthGenerator(AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY)
+
+
+	uname=self.u2s(uname)
+	pword=self.u2s(pword)
+	fname=self.u2s(fname)
+	action=self.u2s(actionInput)	
         origpword=pword
-        action= action.encode('ascii')
 
         ROOT='http://localhost:8080/'
         if pword!='':
             pword=str(hash(pword))
         name='images/'+uname+'.'+fname+'.'+pword+'.png'
+	#s3name='images/'+fnamestr+'.png'
+        #conn.put(BUCKET_NAME,name,S3.S3Object(str(time.time())),
+        #{'Content-Type':'text/plain'}).message
+	
+
 
         #save file to filesystem and mongo
-        if "save" in action:
+        #if "save" in action:
+	if action=="save":
             data=data.split(',')[-1]
             f=open(name,'wb')
             try:
-                f.write(data.decode('base64'))
+                #f.write(data.decode('base64'))
+		conn.put(BUCKET_NAME,name,S3.S3Object(data.decode('base64')),
+		{'x-amz-acl': 'public-read', 'Content-Type':'image/png'}).message
             except:
                 pass
             f.close()
@@ -65,14 +90,20 @@ class Paint(object):
         f=open('paint.html','r').read().split('\n')
 
         for l in f:
-            if "load" in action:
+            #if "load" in action:
+	    if action=="load":
                 if '</head>' in l:
                     output+='<script type="text/javascript">\n'
                     output+='function loadCanvas()\n{\n'
                     #output+='alert("1");\n'
                     output+='var imageObj = new Image();\n'
                     #output+='alert("2");\n'
-                    fileURL=ROOT+name
+                    #fileURL=ROOT+name
+		    #generator.calling_format = S3.CallingFormat.PATH
+		    fileURL=generator.make_bare_url(BUCKET_NAME,name)
+		    print '\n\n'
+		    print fileURL
+		    print '\n\n'
                     output+='imageObj.src = "'+fileURL+'";\n'
                     #output+='alert("3");\n'
                     output+='var context = document.getElementById("imageView").getContext("2d");\n'
@@ -82,9 +113,10 @@ class Paint(object):
                     output+='}\n</script>\n'
                     output+=l+'\n'
                 elif '<body' in l:
-                    output+='<body onload="loadCanvas()">\n'
+                    #output+='<body onload="loadCanvas()">\n'
+		    output+=l+'\n'
                 elif '</body>' in l:
-                    #output+='<script type="text/javascript" > window.onload=loadCanvas();</script>\n'
+                    output+='<script type="text/javascript" > window.onload=loadCanvas();</script>\n'
                     output+=l+'\n'
                 else:
                     output+=l+'\n'
@@ -209,11 +241,12 @@ class IO(object):
 
 class Monitor(object):
     def index(self,s=1,e=0,f=60):
+	global AWS_ACCESS_KEY_ID
+	global AWS_SECRET_ACCESS_KEY
+
         s=int(s)
         e=int(e)
         f=int(f)
-        AWS_ACCESS_KEY_ID=open('akid','r').read().split('\n')[0]
-        AWS_SECRET_ACCESS_KEY=open('sak','r').read().split('\n')[0]
         #AWS_EC2_URL="http://aws.amazon.com/ec2/"
         CWconn=boto.connect_cloudwatch(AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY)
         metrics=CWconn.list_metrics()
