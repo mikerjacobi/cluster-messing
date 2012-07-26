@@ -62,7 +62,8 @@ class Paint(object):
 	action=self.u2s(actionInput)	
         origpword=pword
 
-        ROOT='http://localhost:8080/'
+        #ROOT='http://localhost:8080/'
+	ROOT='http://myloadbalancer-2126499955.us-west-2.elb.amazonaws.com/'
         if pword!='':
             pword=str(hash(pword))
         name='images/'+uname+'.'+fname+'.'+pword+'.png'
