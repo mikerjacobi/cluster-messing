@@ -102,9 +102,6 @@ class Paint(object):
                     #fileURL=ROOT+name
 		    #generator.calling_format = S3.CallingFormat.PATH
 		    fileURL=generator.make_bare_url(BUCKET_NAME,name)
-		    print '\n\n'
-		    print fileURL
-		    print '\n\n'
                     output+='imageObj.src = "'+fileURL+'";\n'
                     #output+='alert("3");\n'
                     output+='var context = document.getElementById("imageView").getContext("2d");\n'
@@ -150,11 +147,6 @@ class Paint(object):
     def download(self, dlUsername, dlFilename, dlPassword):
         #myFile=c['pictures']['data'].find({"username":dlUsername})
         url='"http://localhost:8080/images/'+dlUsername+'.'+dlFilename+'.'+str(hash(dlPassword))+'.png"'
-        #size=0
-        #for record in myFile:
-        #    size+=1
-        #    print str(record)
-        #print 'size:'+str(size)
 
         output=''
         f=open('paint.html','r').read().split('\n')
