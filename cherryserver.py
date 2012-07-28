@@ -9,11 +9,18 @@ import unicodedata
 from pymongo import *
 import S3
 
-os.system('mongod --dbpath ./mongodatadir &')
+#ROOTDIR="/home/mike/Documents/amazon/ws/"
+#HOST='http://localhost:8080/'
+
+ROOTDIR="/home/ubuntu/ws/"
+HOST='http://myloadbalancer-2126499955.us-west-2.elb.amazonaws.com/'
+
+
+os.system('mongod --dbpath '+ROOTDIR+'mongodatadir &')
 time.sleep(3)
 c=Connection()
-AWS_ACCESS_KEY_ID=open('akid','r').read().split('\n')[0]
-AWS_SECRET_ACCESS_KEY=open('sak','r').read().split('\n')[0]
+AWS_ACCESS_KEY_ID=open(ROOTDIR+'akid','r').read().split('\n')[0]
+AWS_SECRET_ACCESS_KEY=open(ROOTDIR+'sak','r').read().split('\n')[0]
 
 class HelloWorld(object):
     def index(self):
@@ -31,7 +38,7 @@ class HelloWorld(object):
 class Paintjs(object):
     def index(self):
         output=""
-        f=open("paint.js",'r').read().split('\n')
+        f=open(ROOTDIR+"paint.js",'r').read().split('\n')
         for l in f:
             output+=l+'\n'
         return output
@@ -62,8 +69,6 @@ class Paint(object):
 	action=self.u2s(actionInput)	
         origpword=pword
 
-        #ROOT='http://localhost:8080/'
-	ROOT='http://myloadbalancer-2126499955.us-west-2.elb.amazonaws.com/'
         if pword!='':
             pword=str(hash(pword))
         name='images/'+uname+'.'+fname+'.'+pword+'.png'
@@ -77,7 +82,7 @@ class Paint(object):
         #if "save" in action:
 	if action=="save":
             data=data.split(',')[-1]
-            f=open(name,'wb')
+            f=open(ROOTDIR+name,'wb')
             try:
                 #f.write(data.decode('base64'))
 		conn.put(BUCKET_NAME,name,S3.S3Object(data.decode('base64')),
@@ -88,7 +93,7 @@ class Paint(object):
             c['pictures']['data'].insert({'path':name,'username':uname,'filename':fname,'password':pword})
         #create output html
         output=''
-        f=open('paint.html','r').read().split('\n')
+        f=open(ROOTDIR+'paint.html','r').read().split('\n')
 
         for l in f:
             #if "load" in action:
@@ -121,63 +126,16 @@ class Paint(object):
             else: 
                 output+=l+'\n'
         output+='Server: <input id="hostname" type="text" value="'+os.popen('hostname').readline().rstrip()+'"/>\n'
-        link=ROOT+"paint?uname="+uname+"&fname="+fname+"&pword="+origpword+"&actionInput=load"
+        link=HOST+"paint?uname="+uname+"&fname="+fname+"&pword="+origpword+"&actionInput=load"
         output+="<br><a href='"+link+"'> "+link+"</a>"
         return output
     index.exposed=True
-'''
-    def upload(self, myFile, username, filename, password):  #,tags):
-        if username=="":
-            username="DEFAULT"
-        password=str(hash(password))
-        if filename=="":
-            filename="DEFAULT"
-        name='images/'+username+'.'+filename+'.'+password+'.png'
-        data=myFile.split(',')[-1]
-        f=open(name,'wb')
-        try:
-            f.write(data.decode('base64'))
-        except:
-            pass
-        f.close()
-        c['pictures']['data'].insert({'path':name,'username':username,'filename':filename,'password':password})
-        return self.index()
-    upload.exposed = True
-
-    def download(self, dlUsername, dlFilename, dlPassword):
-        #myFile=c['pictures']['data'].find({"username":dlUsername})
-        url='"http://localhost:8080/images/'+dlUsername+'.'+dlFilename+'.'+str(hash(dlPassword))+'.png"'
-
-        output=''
-        f=open('paint.html','r').read().split('\n')
-        for l in f:
-            if '</head>' in l:
-                output+='<script type="text/javascript">\n'
-                output+='function loadCanvas()\n{\n'
-                output+='var imageObj = new Image();\n'
-                output+='imageObj.src = '+url+';\n'
-                output+='var context = document.getElementById("imageView").getContext("2d");\n'
-                output+='var draw = context.drawImage(imageObj,0,0);\n'
-                output+='}\n</script>\n'
-                output+=l+'\n'
-            elif '<body' in l:
-                #output+='<body onload="loadCanvas();">\n'
-                output+='<body>\n'
-            elif '</body>' in l:
-                output+='<script type="text/javascript" > window.onload=loadCanvas();</script>\n'
-                output+=l
-            else:
-                output+=l+'\n'
-
-        return output
-    download.exposed=True
-'''
 
 class Time(object):
     #this is a network test
     def index(self):
         output=""
-        f=open("time.html",'r').read().split('\n')
+        f=open(ROOTDIR+"time.html",'r').read().split('\n')
         for l in f:
             if "timeinputgoeshere" in l:
                 output+='<input id="time" type="text" value="'+str(round(time.time()*1000))+'"/>\n'
@@ -192,7 +150,7 @@ class CPU(object):
     #this is a CPU test
     def index(self):
         output=""
-        f=open("cpu.html",'r').read().split('\n')
+        f=open(ROOTDIR+"cpu.html",'r').read().split('\n')
         for l in f:
             if 'cpuusagegoeshere' in l:
                 users=len(os.popen('ps aux | grep crankcpu').read().split('\n'))-3
@@ -217,7 +175,7 @@ class IO(object):
     def index(self):
         output=""
         io={}
-        f=open("io.html",'r').read().split('\n')
+        f=open(ROOTDIR+"io.html",'r').read().split('\n')
         for l in f:
             if "iogoeshere" in l:
                 name='io.'+str(int(random.random()*10000))
@@ -275,7 +233,7 @@ class Monitor(object):
             times[i]=t[0]+'<br>'+t[1]
 
         output=""
-        file=open('monitor.html','r').read().split('\n')
+        file=open(ROOTDIR+'monitor.html','r').read().split('\n')
         for l in file:
             if 'xAxis:' in l:
                 output+=l+'\n'
