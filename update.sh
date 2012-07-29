@@ -1,3 +1,4 @@
 #!/bin/bash
-git pull origin mj
-nc -nl -p 9000 -e /home/ubuntu/ws/update.sh &
+git fetch origin mj
+git reset --hard origin/mj
+nc -nl -p 9000 -e update.sh &
