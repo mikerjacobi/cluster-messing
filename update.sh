@@ -1,4 +1,5 @@
 #!/bin/bash
+cd /home/ubuntu/ws/
 git fetch
-git reset --hard origin/mj
+git reset origin/mj
 nc -nl -p 9000 -e update.sh &
